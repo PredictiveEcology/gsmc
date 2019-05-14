@@ -26,9 +26,9 @@ readXlsx <- function(filename, sheetname) {
   if (!is.null(out$PopId)) {
     out$PopId <- as.character(out$PopId)
   }
-
+  
   return(out)
-
+  
 }
 
 #' Write an Excel file
@@ -47,8 +47,8 @@ writeXlsx <- function(inputObject, filename) {
   # prior step 1: build the list of data.frames: df.list <- lapply(c("a.df","b.df"), function(x) get(x))
   # prior step 2: name each data.frame with the sheetname: names(df.list) <- paste0(c("name1","name2"))
   # inputObject must be a list of named objects (e.g., dataframes)
+  # in the call to writeData(), the current list to be written is coerced to be a dataframe, so that colNames=TRUE works
   wb <- createWorkbook()
-
   # the if-else structure below is used only because I'm not sure how to write an lapply() function to deal with a list of length 1
   if (length(inputObject) > 1) {
     df.list <- inputObject
@@ -59,7 +59,7 @@ writeXlsx <- function(inputObject, filename) {
              addWorksheet(wb, sheetname)
              writeData(wb,
                        sheetname,
-                       df.list[[df]],
+                       data.frame(df.list[[df]]),
                        rowNames=FALSE,
                        colNames=TRUE)
            } )
@@ -68,10 +68,9 @@ writeXlsx <- function(inputObject, filename) {
     addWorksheet(wb, sheetname)
     writeData(wb,
               sheetname,
-              inputObject,
+              data.frame(inputObject),
               rowNames=FALSE,
               colNames=TRUE)
   }
   saveWorkbook(wb,filename, overwrite=TRUE)
 }
-
